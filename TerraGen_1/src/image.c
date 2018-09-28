@@ -11,12 +11,12 @@ void makeImage(int height, int length, int map[length], char * filename)
 		for (j = 0; j < length; ++j)
 		{
 			if (i >= (height-map[j])) {
-				// Mountain
-				setColor(&p, PURPLE);
+				// Terrain
+				p = color_map[PURPLE];
 			}
 			else {
 				// Sky
-				setColor(&p, LIGHT_BLUE);
+				p = color_map[LIGHT_BLUE];
 			}
 			image[i][j] = p;
 		}
@@ -46,37 +46,4 @@ void printImage(int height, int length, Pixel image[height][length], char * file
 	}
 
 	fclose(fp);
-}
-
-void setColor(Pixel *p, Color c)
-{
-	switch (c)
-	{
-		case WHITE:
-			(*p).r = 255; (*p).g = 255; (*p).b = 255;
-			break;
-		case YELLOW:
-			(*p).r = 255; (*p).g = 255; (*p).b = 0;
-			break;
-		case GREEN:
-			(*p).r = 0; (*p).g = 210; (*p).b = 0;
-			break;
-		case LIGHT_BLUE:
-			(*p).r = 130; (*p).g = 130; (*p).b = 240;
-			break;
-		case MID_BLUE:
-			(*p).r = 15; (*p).g = 15; (*p).b = 100;
-			break;
-		case DARK_BLUE:
-			(*p).r = 0; (*p).g = 0; (*p).b = 50;
-			break;
-		case PURPLE:
-			(*p).r = 80; (*p).g = 0; (*p).b = 160;
-			break;
-		case RED:
-			(*p).r = 130; (*p).g = 20; (*p).b = 20;
-			break;
-		default:
-			(*p).r = 0; (*p).g = 0; (*p).b = 0;
-	}
 }

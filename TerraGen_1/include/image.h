@@ -1,7 +1,7 @@
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
 
-#include <stdio.h> // printf
+#include <stdio.h> // fprintf
 
 typedef struct {
 	unsigned char r;
@@ -10,7 +10,7 @@ typedef struct {
 } Pixel;
 
 typedef enum {
-	WHITE,
+	WHITE = 0,
 	YELLOW,
 	GREEN,
 	LIGHT_BLUE,
@@ -18,11 +18,23 @@ typedef enum {
 	DARK_BLUE,
 	PURPLE,
 	RED,
-	BLACK
+	BLACK,
+	N_COLORS
 } Color;
+
+static const Pixel color_map[N_COLORS] = {
+	{255, 255, 255},
+	{255, 255, 0},
+	{0, 210, 0},
+	{130, 130, 240},
+	{15, 15, 100},
+	{0, 0, 50},
+	{80, 0, 160},
+	{130, 20, 20},
+	{0, 0, 0}
+};
 
 void makeImage(int height, int length, int map[length], char * filename);
 void printImage(int height, int length, Pixel image[height][length], char * filename);
-void setColor(Pixel *p, Color c);
 
 #endif

@@ -1,46 +1,52 @@
 #include "heights.h"
 
-void MDA(int d, int height, int length, int map[length])
+void MDA(MDAParameters params, unsigned length, int map[length])
 {
-	MDAParameters p;
-	p.d = d;
-	p.minH = height/4;
-	p.maxH = 3*(height/4);
+	map[0] = rand_interval(params.min_height, params.max_height);
+	map[length-1] = rand_interval(params.min_height, params.max_height);
 
-	map[0] = rand_interval(p.minH, p.maxH);
-	map[length-1] = rand_interval(p.minH, p.maxH);
-
-	MDASetHeight(p, 0, length-1, length, map);
+	MDASetHeight(params, 0, length-1, length, map);
 }
 
-void MDASetHeight(MDAParameters p, int l, int r, int length, int map[length])
+void defaultMDA(unsigned height, unsigned length, int map[length])
 {
-	int m = l + ((r - l) / 2);
-	map[m] = (map[l] + map[r]) / 2;
+	MDAParameters params;
+	params.max_displacement = height/2;
+	params.min_height = height/4;
+	params.max_height = 3 * (height/4);
 
-	int altered = map[m];
+	MDA(params, length, map);
+}
+
+void MDASetHeight(MDAParameters params, unsigned l, unsigned r,
+	unsigned length, int map[length])
+{
+	int mid = l + ((r - l) / 2);
+	map[mid] = (map[l] + map[r]) / 2;
+
+	int displaced, displacement;
 	do {
-		altered = map[m] + (rand_interval(0, 2 * p.d) - p.d);
-	} while (altered < p.minH || altered > p.maxH);
-	map[m] = altered;
+		displacement = rand_interval(0, 2 * params.max_displacement) - params.max_displacement;
+		displaced = map[mid] + displacement;
+	} while (displaced < params.min_height || displaced > params.max_height);
+	map[mid] = displaced;
 
-	p.d /= 2;
+	params.max_displacement /= 2;
 
-	if (m != (l+1)) {
-		MDASetHeight(p, l, m, length, map);
+	if (mid != (l+1)) {
+		MDASetHeight(params, l, mid, length, map);
 	}
-	if (m != (r-1)) {
-		MDASetHeight(p, m, r, length, map);
+	if (mid != (r-1)) {
+		MDASetHeight(params, mid, r, length, map);
 	}
-
 }
 
-unsigned int rand_interval(unsigned int min, unsigned int max)
+unsigned rand_interval(unsigned min, unsigned max)
 {
     int r;
-    unsigned int range = 1 + max - min;
-    unsigned int buckets = RAND_MAX / range;
-    unsigned int limit = buckets * range;
+    unsigned range = 1 + max - min;
+    unsigned buckets = RAND_MAX / range;
+    unsigned limit = buckets * range;
 
     do {
         r = rand();
