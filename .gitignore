@@ -1,6 +1,6 @@
 bin/
 tmp/
-*.ppm
+images/
 *.tmp
 *.bak
 *.swp
