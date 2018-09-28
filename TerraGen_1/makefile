@@ -19,7 +19,7 @@ EXEC = terragen
 
 ### executable target
 main: bin images main.o terrain.o heights.o image.o
-	$(CXX) $(BINDIR)main.o $(BINDIR)terrain.o $(BINDIR)heights.o $(BINDIR)image.o -o $(EXEC) $(OPTIONSCXX)
+	$(CXX) $(BINDIR)main.o $(BINDIR)terrain.o $(BINDIR)heights.o $(BINDIR)image.o -o $(BINDIR)$(EXEC) $(OPTIONSCXX)
 
 bin:
 	mkdir -p ./bin/
@@ -42,5 +42,5 @@ image.o: $(SRCDIR)image.c
 
 ### clear objects & executable
 clean: bin
-	$(DEL) $(EXEC)
+	$(DEL) $(BINDIR)$(EXEC)
 	$(DEL) $(BINDIR)*.o
