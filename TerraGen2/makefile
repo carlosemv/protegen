@@ -1,13 +1,18 @@
 # commands
-CXX = g++
+UNAME := $(shell uname)
+ifeq ($(UNAME),Darwin)
+	CXX = g++-7
+else
+	CXX = g++
+endif
 DEL = rm
 
 # options
 DEBUG = -g
 WARNING = -Wall
 OPTMIZE = -O3
-STD = -std=c++14
-OPTIONSCXX = $(STD) $(WARNING) $(OPTMIZE)
+STD = -std=c++17
+OPTIONSCXX = $(STD) $(WARNING)
 
 
 # directories
