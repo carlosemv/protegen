@@ -1,13 +1,13 @@
 #include "HeightMap.h"
 
-HeightMap::HeightMap(int _sz, int _maxH) :
+HeightMap::HeightMap(int _sz, int _heightRange) :
 	size(_sz),
-	maxHeight(_maxH),
+	heightRange(_heightRange),
 	map(nullptr)
 {
 	if (_sz <= 0)
 		throw std::invalid_argument("[HeightMap()]: Invalid size\n");
-	if (_maxH <= 0)
+	if (_heightRange <= 0)
 		throw std::invalid_argument("[HeightMap()]: Invalid maximum height\n");
 
 	map = std::make_unique<int[]>(_sz * _sz);
@@ -24,15 +24,15 @@ int HeightMap::uniform(int min, int max)
 
 void HeightMap::genWithDSA()
 {
-	getMapAt(0, 0) = uniform(-maxHeight/2, maxHeight/2);
-	getMapAt(0, size-1) = uniform(-maxHeight/2, maxHeight/2);
-	getMapAt(size-1, 0) = uniform(-maxHeight/2, maxHeight/2);
-	getMapAt(size-1, size-1) = uniform(-maxHeight/2, maxHeight/2);
+	getMapAt(0, 0) = uniform(-heightRange/2, heightRange/2);
+	getMapAt(0, size-1) = uniform(-heightRange/2, heightRange/2);
+	getMapAt(size-1, 0) = uniform(-heightRange/2, heightRange/2);
+	getMapAt(size-1, size-1) = uniform(-heightRange/2, heightRange/2);
 
-	diamondSquare(size-1, maxHeight*0.75);
+	diamondSquare(size-1, heightRange * INIT_VAR_FACTOR);
 }
 
-void HeightMap::diamondSquare(int step, int v)
+void HeightMap::diamondSquare(int step, int variation)
 {
 	if (step <= 1)
 		return;
@@ -40,16 +40,17 @@ void HeightMap::diamondSquare(int step, int v)
 
 	// diamonds
 	int a, b, c, d;
-	for(int i = hstep; i < size-1; i += step)
+	for (int i = hstep; i < size-1; i += step)
 	{
-		for(int j = hstep; j < size-1; j += step)
+		for (int j = hstep; j < size-1; j += step)
 		{
 			a = getMapAt(i-hstep, j-hstep);
 			b = getMapAt(i-hstep, j+hstep);
 			c = getMapAt(i+hstep, j-hstep);
 			d = getMapAt(i+hstep, j+hstep);
 
-			getMapAt(i, j) = ((a+b+c+d)/4) + uniform(-v, v);
+			getMapAt(i, j) = ((a+b+c+d)/4) + 
+				uniform(-variation, variation);
 		}
 	}
 
@@ -57,6 +58,7 @@ void HeightMap::diamondSquare(int step, int v)
 	int offset = 0;
 	for (int i = 0; i < size; i += hstep)
 	{
+		// flip between hstep and 0 offset for each line
 		offset = (offset == 0) ? hstep : 0;
 		for (int j = offset; j < size; j += step)
 		{
@@ -65,15 +67,18 @@ void HeightMap::diamondSquare(int step, int v)
 			c = (j != size-1) ? getMapAt(i, j+hstep) : 0;
 			d = (i != size-1) ? getMapAt(i+hstep, j) : 0;
 
-			if (i==0||j==0||i==size-1||j==size-1)
-				getMapAt(i, j) = ((a+b+c+d)/3) + uniform(-v, v);
-			else
-				getMapAt(i, j) = ((a+b+c+d)/4) + uniform(-v, v);
+			if (i == 0 || j == 0 || i == size-1 || j == size-1) {
+				getMapAt(i, j) = ((a+b+c+d)/3) + 
+					uniform(-variation, variation);
+			}
+			else {
+				getMapAt(i, j) = ((a+b+c+d)/4) + 
+					uniform(-variation, variation);
+			}
 		}
 	}
 
-
-	diamondSquare(hstep, v*0.55);
+	diamondSquare(hstep, variation * VAR_REDUCTION_FACTOR);
 }
 
 bool HeightMap::makePPM(std::string _filename) const
@@ -98,10 +103,11 @@ bool HeightMap::makePPM(std::string _filename) const
 	out << size << " " << size << std::endl;
 	out << "255\n";
 
+	auto map_ptr = map.get();
 	for (auto i = 0; i < size; ++i)
 	{
 		for (auto j = 0; j < size; ++j) {
-			Pixel p = getColor(getMapAt(i, j), maxHeight);
+			Pixel p = getColor(*map_ptr++, heightRange);
 			out << (int)p.r << " "
 				<< (int)p.g << " "
 				<< (int)p.b << "\n";		 
@@ -112,37 +118,16 @@ bool HeightMap::makePPM(std::string _filename) const
 	return true;
 }
 
-HeightMap::Pixel HeightMap::getColor(int height, int maxHeight) const
+HeightMap::Pixel HeightMap::getColor(int height, int heightRange) const
 {
-	Pixel p;
-	int pieceSz = (maxHeight*2) / 9;
-	if(height < pieceSz-maxHeight) {
-		p.r = 0; p.g = 0; p.b = 153; // deep ocean
-	}
-	else if (height < (2*pieceSz)-maxHeight) {
-		p.r = 0; p.g = 77; p.b = 204; // mid ocean
-	}
-	else if (height < (3*pieceSz)-maxHeight) {
-		p.r = 0; p.g = 153; p.b = 255; // shallow ocean
-	}
-	else if (height < (4*pieceSz)-maxHeight) {
-		p.r = 248; p.g = 248; p.b = 153; // sand
-	}
-	else if (height < (5*pieceSz)-maxHeight) {
-		p.r = 45; p.g = 191; p.b = 35; // light vegetation
-	}
-	else if (height < (6*pieceSz)-maxHeight) {
-		p.r = 6; p.g = 115; p.b = 5; // dense vegetation
-	}
-	else if (height < (7*pieceSz)-maxHeight) {
-		p.r = 175; p.g = 175; p.b = 175; // rocky
-	}
-	else if (height < (8*pieceSz)-maxHeight) {
-		p.r = 111; p.g = 111; p.b = 111; // mountain
-	}
-	else {
-		p.r = 248; p.g = 248; p.b = 248; // mountain top
-	}
+	int n_terrains = (int)Terrain::N_TERRAINS;
+	int terrainSize = heightRange / n_terrains;
 
-	return p;
+	int terrain = (height + (heightRange/2)) / terrainSize;
+	if (terrain < 0)
+		terrain = 0;
+	else if (terrain >= n_terrains)
+		terrain = n_terrains - 1;
+
+	return COLOR_MAP[terrain];
 }
