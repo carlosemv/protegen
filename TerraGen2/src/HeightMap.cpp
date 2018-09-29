@@ -40,9 +40,9 @@ void HeightMap::diamondSquare(int step, int variation)
 
 	// diamonds
 	int a, b, c, d;
-	for (int i = hstep; i < size-1; i += step)
+	for (unsigned i = hstep; i < size-1; i += step)
 	{
-		for (int j = hstep; j < size-1; j += step)
+		for (unsigned j = hstep; j < size-1; j += step)
 		{
 			a = getMapAt(i-hstep, j-hstep);
 			b = getMapAt(i-hstep, j+hstep);
@@ -56,11 +56,11 @@ void HeightMap::diamondSquare(int step, int variation)
 
 	//squares
 	int offset = 0;
-	for (int i = 0; i < size; i += hstep)
+	for (unsigned i = 0; i < size; i += hstep)
 	{
 		// flip between hstep and 0 offset for each line
 		offset = (offset == 0) ? hstep : 0;
-		for (int j = offset; j < size; j += step)
+		for (unsigned j = offset; j < size; j += step)
 		{
 			a = (i != 0) ? getMapAt(i-hstep, j) : 0;
 			b = (j != 0) ? getMapAt(i, j-hstep) : 0;
@@ -104,13 +104,13 @@ bool HeightMap::makePPM(std::string _filename) const
 	out << "255\n";
 
 	auto map_ptr = map.get();
-	for (auto i = 0; i < size; ++i)
+	for (unsigned i = 0; i < size; ++i)
 	{
-		for (auto j = 0; j < size; ++j) {
+		for (unsigned j = 0; j < size; ++j) {
 			Pixel p = getColor(*map_ptr++, heightRange);
-			out << (int)p.r << " "
-				<< (int)p.g << " "
-				<< (int)p.b << "\n";		 
+			out << (unsigned)p.r << " "
+				<< (unsigned)p.g << " "
+				<< (unsigned)p.b << "\n";		 
 		}
 	}
 
@@ -118,7 +118,7 @@ bool HeightMap::makePPM(std::string _filename) const
 	return true;
 }
 
-HeightMap::Pixel HeightMap::getColor(int height, int heightRange) const
+HeightMap::Pixel HeightMap::getColor(int height, int heightRange)
 {
 	int n_terrains = (int)Terrain::N_TERRAINS;
 	int terrainSize = heightRange / n_terrains;
