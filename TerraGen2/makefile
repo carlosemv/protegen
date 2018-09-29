@@ -6,8 +6,8 @@ DEL = rm
 DEBUG = -g
 WARNING = -Wall
 OPTMIZE = -O3
-STD = -std=c++11
-OPTIONSCXX = $(STD) $(WARNING)
+STD = -std=c++14
+OPTIONSCXX = $(STD) $(WARNING) $(OPTMIZE)
 
 
 # directories
@@ -16,15 +16,18 @@ SRCDIR = ./src/
 BINDIR = ./bin/
 
 # executable
-EXEC = protegen
+EXEC = terragen
 
 
 ### executable target
-main: bin main.o HeightMap.o
-	$(CXX) $(BINDIR)main.o $(BINDIR)HeightMap.o -o $(EXEC) $(OPTIONSCXX)
+main: bin images main.o HeightMap.o
+	$(CXX) $(BINDIR)main.o $(BINDIR)HeightMap.o -o $(BINDIR)$(EXEC) $(OPTIONSCXX)
 
 bin:
 	mkdir -p ./bin/
+
+images:
+	mkdir -p ./images/
 
 ### (main)
 main.o: $(SRCDIR)main.cpp
@@ -36,5 +39,5 @@ HeightMap.o: $(SRCDIR)HeightMap.cpp
 
 ### clear objects & executable
 clean:
-	$(DEL) $(EXEC)
+	$(DEL) $(BINDIR)$(EXEC)
 	$(DEL) $(BINDIR)*.o
