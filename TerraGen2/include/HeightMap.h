@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 #include <random>
 #include <string>
 #include <fstream>
@@ -22,15 +23,18 @@ protected:
 	static const int MAX_HEIGHT = 90;
 	int size;
 	int maxHeight;
-	int** map;
+	std::unique_ptr<int[]> map;
 	std::mt19937 generator;
 
+	int& getMapAt(int x, int y) { return map.get()[x*size+y]; }
+	const int& getMapAt(int x, int y) const { return map.get()[x*size+y]; }
 	int uniform(int min, int max);
 	Pixel getColor(int height, int maxHeight) const;
 
 public:
 	HeightMap(int _sz = MAX_SIZE, int _maxH = MAX_HEIGHT);
-	virtual ~HeightMap();
+	HeightMap(HeightMap& hp) = delete;
+	virtual ~HeightMap() {}
 	void genWithDSA();
 	void diamondSquare(int step, int v);
 	bool makePPM(std::string _filename) const;

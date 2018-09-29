@@ -10,20 +10,10 @@ HeightMap::HeightMap(int _sz, int _maxH) :
 	if (_maxH <= 0)
 		throw std::invalid_argument("[HeightMap()]: Invalid maximum height\n");
 
-
-	map = new int* [_sz];
-	map[0] = new int [_sz * _sz];
-	for (auto i = 1; i < _sz; ++i)
-		map[i] = map[0] + i * _sz;
+	map = std::make_unique<int[]>(_sz * _sz);
 
 	std::random_device rd;
 	generator.seed(rd());
-}
-
-HeightMap::~HeightMap()
-{
-	delete [] map[0];
-	delete [] map;
 }
 
 int HeightMap::uniform(int min, int max)
@@ -34,10 +24,10 @@ int HeightMap::uniform(int min, int max)
 
 void HeightMap::genWithDSA()
 {
-	map[0][0] = uniform(-maxHeight/2, maxHeight/2);
-	map[0][size-1] = uniform(-maxHeight/2, maxHeight/2);
-	map[size-1][0] = uniform(-maxHeight/2, maxHeight/2);
-	map[size-1][size-1] = uniform(-maxHeight/2, maxHeight/2);
+	getMapAt(0, 0) = uniform(-maxHeight/2, maxHeight/2);
+	getMapAt(0, size-1) = uniform(-maxHeight/2, maxHeight/2);
+	getMapAt(size-1, 0) = uniform(-maxHeight/2, maxHeight/2);
+	getMapAt(size-1, size-1) = uniform(-maxHeight/2, maxHeight/2);
 
 	diamondSquare(size-1, maxHeight*0.75);
 }
@@ -54,12 +44,12 @@ void HeightMap::diamondSquare(int step, int v)
 	{
 		for(int j = hstep; j < size-1; j += step)
 		{
-			a = map[i-hstep][j-hstep];
-			b = map[i-hstep][j+hstep];
-			c = map[i+hstep][j-hstep];
-			d = map[i+hstep][j+hstep];
+			a = getMapAt(i-hstep, j-hstep);
+			b = getMapAt(i-hstep, j+hstep);
+			c = getMapAt(i+hstep, j-hstep);
+			d = getMapAt(i+hstep, j+hstep);
 
-			map[i][j] = ((a+b+c+d)/4) + uniform(-v, v);
+			getMapAt(i, j) = ((a+b+c+d)/4) + uniform(-v, v);
 		}
 	}
 
@@ -70,15 +60,15 @@ void HeightMap::diamondSquare(int step, int v)
 		offset = (offset == 0) ? hstep : 0;
 		for (int j = offset; j < size; j += step)
 		{
-			a = (i != 0) ? map[i-hstep][j] : 0;
-			b = (j != 0) ? map[i][j-hstep] : 0;
-			c = (j != size-1) ? map[i][j+hstep] : 0;
-			d = (i != size-1) ? map[i+hstep][j] : 0;
+			a = (i != 0) ? getMapAt(i-hstep, j) : 0;
+			b = (j != 0) ? getMapAt(i, j-hstep) : 0;
+			c = (j != size-1) ? getMapAt(i, j+hstep) : 0;
+			d = (i != size-1) ? getMapAt(i+hstep, j) : 0;
 
 			if (i==0||j==0||i==size-1||j==size-1)
-				map[i][j] = ((a+b+c+d)/3) + uniform(-v, v);
+				getMapAt(i, j) = ((a+b+c+d)/3) + uniform(-v, v);
 			else
-				map[i][j] = ((a+b+c+d)/4) + uniform(-v, v);
+				getMapAt(i, j) = ((a+b+c+d)/4) + uniform(-v, v);
 		}
 	}
 
@@ -111,7 +101,7 @@ bool HeightMap::makePPM(std::string _filename) const
 	for (auto i = 0; i < size; ++i)
 	{
 		for (auto j = 0; j < size; ++j) {
-			Pixel p = getColor(map[i][j], maxHeight);
+			Pixel p = getColor(getMapAt(i, j), maxHeight);
 			out << (int)p.r << " "
 				<< (int)p.g << " "
 				<< (int)p.b << "\n";		 

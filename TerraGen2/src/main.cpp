@@ -5,7 +5,7 @@
 int main()
 {
 	auto start = std::chrono::steady_clock::now();
-	auto m = HeightMap();
+	HeightMap m;
 	auto end = std::chrono::steady_clock::now();
 	auto diff = end - start;
 
@@ -27,7 +27,7 @@ int main()
 	/*****************************/
 
 	start = std::chrono::steady_clock::now();
-	m.makePPM("terrain/i1.ppm");
+	m.makePPM("images/i1.ppm");
 	end = std::chrono::steady_clock::now();
 	diff = end - start;
 
