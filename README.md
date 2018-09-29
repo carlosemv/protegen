@@ -16,6 +16,9 @@ Implementation of the following features is not currently planned, but could be 
 * Construct image from multiple layers of height maps (giving a "mountain range" impression).
 
 ## TerraGen2
-:construction: _under construction_ :construction:
+TerraGen2 is a random heightmap generator. It functions similarly to TerraGen1, and so far has only a dimond-square algorithm available for generation. Below are some examples of images generated.
 
 <img src="https://github.com/carlosemv/protegen/raw/master/TerraGen2/examples/img1.png" width="250"> <img src="https://github.com/carlosemv/protegen/raw/master/TerraGen2/examples/img2.png" width="250"> <img src="https://github.com/carlosemv/protegen/raw/master/TerraGen2/examples/img3.png" width="250">
+
+### Further Development
+Most improvements considered for TerraGen1 are also applicable for TerraGen2. Implementation of other generating algorithms is especially desirable, perhaps based on Perlin or Simplex noise. Some form of 3D rendering or 2D shading could also be considered.
