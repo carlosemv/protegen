@@ -17,3 +17,5 @@ Implementation of the following features is not currently planned, but could be 
 
 ## TerraGen2
 :construction: _under construction_ :construction:
+
+<img src="https://github.com/carlosemv/protegen/raw/master/TerraGen2/examples/img1.png" width="250"> <img src="https://github.com/carlosemv/protegen/raw/master/TerraGen2/examples/img2.png" width="250"> <img src="https://github.com/carlosemv/protegen/raw/master/TerraGen2/examples/img3.png" width="250">
